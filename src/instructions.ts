@@ -1,7 +1,12 @@
 export const DEFAULT_BRIEF =
   "Find 10 heads of sales at software companies in London with 20 to 200 staff and draft a short campaign about cutting time spent on lead research.";
 
-export function instructions({ budget, dryRun }: { budget: number; dryRun: boolean }): string {
+/** The sign-off on every email when SENDER_NAME is not set. A person fills it in before approving. */
+export const SIGN_OFF_PLACEHOLDER = "[Your name]";
+
+export function instructions({ budget, dryRun, senderName }: { budget: number; dryRun: boolean; senderName?: string }): string {
+  // Layrcake campaigns have no sender variable, so the sign-off is written into each email.
+  const name = senderName?.trim();
   return `You run outbound prospecting with the Layrcake tools. Work from the user's one-sentence brief.
 
 1. Call find_leads once. Send audience (the brief in your own words) plus at least one of titles, industries,
@@ -18,6 +23,8 @@ Rules:
 - The whole run has a budget of ${budget} credits. Each result reports credits_charged. If a call is refused
   for budget, stop and report what you have.
 - Never guess an email address. Never call a tool after launch_campaign.
+- End every email with this sign-off line, exactly as written: ${name || SIGN_OFF_PLACEHOLDER}
+  Never sign as yourself or with a role, and never invent a name, title or company for the sender.
 ${
   dryRun
     ? `- This is a dry run. Every call returns a plan with the most it could cost, and finds nothing.
@@ -28,5 +35,11 @@ ${
     : ""
 }
 Finish with a short report: people found, emails kept, how many were catch-all, credits spent, and the
-approval link.`;
+approval link.${
+    name
+      ? ""
+      : `
+Also say that every email is signed ${SIGN_OFF_PLACEHOLDER} and the sign-off must be filled in before the campaign
+is approved.`
+  }`;
 }

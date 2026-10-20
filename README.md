@@ -58,6 +58,8 @@ Charged: 0 credits. Your key and the Layrcake MCP server work.
 
 If `create_campaign` says it `would trip: sending_capacity`, connect mailboxes in the [Layrcake console](https://app.layrcake.dev) before a live run.
 
+Set `SENDER_NAME` in `.env` to the name your emails are signed with. Without it, every draft is signed `[Your name]` and the report reminds you to fill it in before you approve.
+
 ## Run
 
 Start with a dry run. Every Layrcake call returns a plan with its cost instead of data, so it is free. It still uses your Anthropic key.
@@ -131,11 +133,12 @@ We ran this kit this way on 20 October 2026.
 ## Project layout
 
 ```text
-src/agent.ts         the agent: options, MCP server, output
-src/guard.ts         hooks that enforce budget, dry run, verification and approval
-src/instructions.ts  the system prompt
-src/smoke.ts         free setup check, no model call
-test/guard.test.ts   guard tests with mocked Layrcake responses
+src/agent.ts               the agent: options, MCP server, output
+src/guard.ts               hooks that enforce budget, dry run, verification and approval
+src/instructions.ts        the system prompt
+src/smoke.ts               free setup check, no model call
+test/guard.test.ts         guard tests with mocked Layrcake responses
+test/instructions.test.ts  system prompt tests, including the sign-off rule
 ```
 
 ## Development

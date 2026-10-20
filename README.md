@@ -89,13 +89,13 @@ Brief: Find 10 heads of sales at software companies in London ...
 -> create_campaign
 -> launch_campaign
 
-(Claude's report: people found, emails kept, catch-alls, credits spent, the approval link)
+(Claude's report: 10 people found, 6 emails kept, 1 catch-all, and one lookup dropped because it returned a different person)
 
-Layrcake credits spent: 64.5 of 100.
+Layrcake credits spent: 45.5 of 100.
 Nothing has been sent. A person approves or declines here: <approval link>
 ```
 
-The numbers above show the format. Your run will differ.
+These numbers are from our test run of the default brief on 20 October 2026. Your run will differ.
 
 ## How approval works
 
@@ -105,9 +105,22 @@ A signed-in person in your workspace opens the link, reads the preview and appro
 
 ## Cost
 
-A run like this usually costs 50 to 70 Layrcake credits; set BUDGET. A credit is $0.01. Finding people costs 0.25 credits each, an email costs 5 credits when found, a verification costs 1.25, and lookups that find nothing are free. Drafting the campaign is free. See [pricing](https://docs.layrcake.dev/pricing.html).
+Our test runs of the default brief cost 45.5 to 53 Layrcake credits. A credit is $0.01. Finding people costs 0.25 credits each, an email costs 5 credits when found, a verification costs 1.25, and lookups that find nothing are free. Drafting the campaign is free. See [pricing](https://docs.layrcake.dev/pricing.html).
 
 `BUDGET` in `.env` is the ceiling for the whole run (default 100). The Anthropic model usage is billed separately by Anthropic. Set `MODEL` to change the model. The default is `claude-sonnet-5-5`.
+
+## Using OpenRouter
+
+The kit runs unchanged through [OpenRouter](https://openrouter.ai). Put these in `.env` instead of a direct model key:
+
+```text
+ANTHROPIC_BASE_URL=https://openrouter.ai/api
+ANTHROPIC_AUTH_TOKEN=<your OpenRouter key>
+ANTHROPIC_API_KEY=<your OpenRouter key>
+MODEL=anthropic/claude-sonnet-5.5
+```
+
+We ran this kit this way on 20 October 2026.
 
 ## Project layout
 

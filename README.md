@@ -79,23 +79,29 @@ With no brief, it uses the one above.
 Each Layrcake call prints as it happens, then Claude's report, then two lines from the guard:
 
 ```text
-Live run. Budget: 100 credits.
-Brief: Find 10 heads of sales at software companies in London ...
+Live run. Budget: 25 credits.
+Brief: Find 3 heads of sales at software companies in London with 20 to 200 staff, verify their work emails, and draft a short campaign about cutting time spent on lead research.
 
 -> find_leads
 -> enrich
+-> enrich
+-> enrich
+-> enrich
+-> enrich
+-> enrich
 -> verify_email
-...
+-> verify_email
+-> verify_email
 -> create_campaign
 -> launch_campaign
 
-(Claude's report: 10 people found, 6 emails kept, 1 catch-all, and one lookup dropped because it returned a different person)
+(Claude's report: 10 people found, 3 enriched, 3 emails kept with 1 catch-all, and a warning that one lookup may have returned a different person)
 
-Layrcake credits spent: 45.5 of 100.
+Layrcake credits spent: 21.75 of 25.
 Nothing has been sent. A person approves or declines here: <approval link>
 ```
 
-These numbers are from our test run of the default brief on 20 October 2026. Your run will differ.
+This is our test run on 20 October 2026, with `BUDGET=25`, the three-person brief above and `anthropic/claude-sonnet-5.5` through OpenRouter. It took 45 seconds. Only three of the six `enrich` calls were charged. Your run will differ.
 
 ## How approval works
 

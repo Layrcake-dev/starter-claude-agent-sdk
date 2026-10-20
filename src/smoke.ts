@@ -27,7 +27,7 @@ const calls: [string, Record<string, unknown>][] = [
 
 try {
   for (const [tool, args] of calls) {
-    const decision = guard.prepare(tool, args);
+    const decision = await guard.prepare(tool, args);
     if (!decision.allow) throw new Error(`${tool}: ${decision.reason}`);
     const response = await client.callTool({ name: tool, arguments: decision.input });
     guard.record(tool, decision.input, response);

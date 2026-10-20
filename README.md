@@ -16,7 +16,7 @@ It uses the [Claude Agent SDK](https://code.claude.com/docs/en/agent-sdk/overvie
 
 The Claude Agent SDK is built around MCP. Pointing it at `https://mcp.layrcake.dev/mcp` gives Claude every Layrcake tool with the schemas and descriptions Layrcake maintains. There are no tool definitions to write or keep in sync.
 
-The Agent SDK's hooks let the starter enforce the rules in code, not just in the prompt. `src/guard.ts` runs before and after every Layrcake call:
+The Agent SDK's hooks let the starter enforce the rules in code, not just in the prompt. `src/guard.ts` runs before and after every Layrcake call. Its run state (budget, verified emails, the approval stop and idempotency keys) is `createAgentRun` from `layrcake/agent-tools`, the same code the Layrcake AI SDK and Mastra tools use:
 
 - It sets `budget_credits` on each paid call to what is left of `BUDGET`, and refuses calls once the budget is spent.
 - It adds `dry_run: true` to every call when you pass `--dry-run`.
@@ -27,7 +27,7 @@ The Agent SDK's hooks let the starter enforce the rules in code, not just in the
 
 Built-in tools are off (`tools: []`), so the agent has no shell and no file access. Local Claude Code settings are ignored.
 
-If you prefer plain function calls, the official SDKs work too: [layrcake-js](https://github.com/Layrcake-dev/layrcake-js) and [layrcake-python](https://github.com/Layrcake-dev/layrcake-python). This kit already uses `getApproval` from the `layrcake` package to read the approval link.
+If you prefer plain function calls, the official SDKs work too: [layrcake-js](https://github.com/Layrcake-dev/layrcake-js) and [layrcake-python](https://github.com/Layrcake-dev/layrcake-python). This kit already uses `layrcake/agent-tools` from the `layrcake` package for its run state.
 
 ## Prerequisites
 

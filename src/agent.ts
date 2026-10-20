@@ -20,7 +20,7 @@ for await (const message of query({
   prompt: brief,
   options: {
     model: process.env.MODEL ?? "claude-sonnet-5-5",
-    systemPrompt: instructions({ budget, dryRun }),
+    systemPrompt: instructions({ budget, dryRun, senderName: process.env.SENDER_NAME }),
     mcpServers: {
       layrcake: { type: "http", url: "https://mcp.layrcake.dev/mcp", headers: { Authorization: `Bearer ${apiKey}` } },
     },

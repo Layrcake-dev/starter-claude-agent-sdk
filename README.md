@@ -16,7 +16,7 @@ It uses the [Claude Agent SDK](https://code.claude.com/docs/en/agent-sdk/overvie
 
 The Claude Agent SDK is built around MCP. Pointing it at `https://mcp.layrcake.dev/mcp` gives Claude every Layrcake tool with the schemas and descriptions Layrcake maintains. There are no tool definitions to write or keep in sync.
 
-The Agent SDK's hooks let the starter enforce the rules in code, not just in the prompt. `src/guard.ts` runs before and after every Layrcake call:
+The Agent SDK's hooks let the starter enforce the rules in code, not just in the prompt. `src/guard.ts` runs before and after every Layrcake call. Its run state (budget, verified emails, the approval stop and idempotency keys) is `createAgentRun` from `layrcake/agent-tools`, the same code the Layrcake AI SDK and Mastra tools use:
 
 - It sets `budget_credits` on each paid call to what is left of `BUDGET`, and refuses calls once the budget is spent.
 - It adds `dry_run: true` to every call when you pass `--dry-run`.
@@ -27,7 +27,7 @@ The Agent SDK's hooks let the starter enforce the rules in code, not just in the
 
 Built-in tools are off (`tools: []`), so the agent has no shell and no file access. Local Claude Code settings are ignored.
 
-If you prefer plain function calls, the official SDKs work too: [layrcake-js](https://github.com/Layrcake-dev/layrcake-js) and [layrcake-python](https://github.com/Layrcake-dev/layrcake-python). This kit already uses `getApproval` from the `layrcake` package to read the approval link.
+If you prefer plain function calls, the official SDKs work too: [layrcake-js](https://github.com/Layrcake-dev/layrcake-js) and [layrcake-python](https://github.com/Layrcake-dev/layrcake-python). This kit already uses `layrcake/agent-tools` from the `layrcake` package for its run state.
 
 ## Prerequisites
 
@@ -58,6 +58,8 @@ Charged: 0 credits. Your key and the Layrcake MCP server work.
 
 If `create_campaign` says it `would trip: sending_capacity`, connect mailboxes in the [Layrcake console](https://app.layrcake.dev) before a live run.
 
+Set `SENDER_NAME` in `.env` to the name your emails are signed with. Without it, every draft is signed `[Your name]` and the report reminds you to fill it in before you approve.
+
 ## Run
 
 Start with a dry run. Every Layrcake call returns a plan with its cost instead of data, so it is free. It still uses your Anthropic key.
@@ -79,23 +81,29 @@ With no brief, it uses the one above.
 Each Layrcake call prints as it happens, then Claude's report, then two lines from the guard:
 
 ```text
-Live run. Budget: 100 credits.
-Brief: Find 10 heads of sales at software companies in London ...
+Live run. Budget: 25 credits.
+Brief: Find 3 heads of sales at software companies in London with 20 to 200 staff, verify their work emails, and draft a short campaign about cutting time spent on lead research.
 
 -> find_leads
 -> enrich
+-> enrich
+-> enrich
+-> enrich
+-> enrich
+-> enrich
 -> verify_email
-...
+-> verify_email
+-> verify_email
 -> create_campaign
 -> launch_campaign
 
-(Claude's report: 10 people found, 6 emails kept, 1 catch-all, and one lookup dropped because it returned a different person)
+(Claude's report: 10 people found, 3 enriched, 3 emails kept with 1 catch-all, and a warning that one lookup may have returned a different person)
 
-Layrcake credits spent: 45.5 of 100.
+Layrcake credits spent: 21.75 of 25.
 Nothing has been sent. A person approves or declines here: <approval link>
 ```
 
-These numbers are from our test run of the default brief on 20 October 2026. Your run will differ.
+This is our test run on 20 October 2026, with `BUDGET=25`, the three-person brief above and `anthropic/claude-sonnet-5.5` through OpenRouter. It took 45 seconds. Only three of the six `enrich` calls were charged. Your run will differ.
 
 ## How approval works
 
@@ -125,11 +133,12 @@ We ran this kit this way on 20 October 2026.
 ## Project layout
 
 ```text
-src/agent.ts         the agent: options, MCP server, output
-src/guard.ts         hooks that enforce budget, dry run, verification and approval
-src/instructions.ts  the system prompt
-src/smoke.ts         free setup check, no model call
-test/guard.test.ts   guard tests with mocked Layrcake responses
+src/agent.ts               the agent: options, MCP server, output
+src/guard.ts               hooks that enforce budget, dry run, verification and approval
+src/instructions.ts        the system prompt
+src/smoke.ts               free setup check, no model call
+test/guard.test.ts         guard tests with mocked Layrcake responses
+test/instructions.test.ts  system prompt tests, including the sign-off rule
 ```
 
 ## Development
